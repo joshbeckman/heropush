@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# heropush <build-dir>
+
+set -e
+
+build_dir=$1
+
+if [ -z "$HEROKU_API_KEY" ]; then
+    echo "No HEROKU_API_KEY set"
+    exit 1
+fi 
+if [ -z "$HEROKU_APP" ]; then
+    echo "No HEROKU_APP set"
+    exit 1
+fi 
+
+echo '=====> heropush'
+
+curl_heroku() {
+    local method=$1
+    local url="https://api.heroku.com$2"
+    curl -s -L -X $method $url -H "Authorization: Bearer $HEROKU_API_KEY" -H 'Accept: application/vnd.heroku+json; version=3' -H "Content-Type: application/json"
+}
+
+curl_heroku_body() {
+    local method=$1
+    local url="https://api.heroku.com$2"
+    curl -s -L -X $method $url -H "Authorization: Bearer $HEROKU_API_KEY" -H 'Accept: application/vnd.heroku+json; version=3' -H "Content-Type: application/json" -d "$3"
+}
+
+archive_file="${HEROKU_APP}.heropush.tgz"
+version=$(git rev-parse HEAD)
+
+echo "       fetching archive URLs"
+blob_urls=$(curl_heroku "POST" "/apps/$HEROKU_APP/sources")
+put_url=$(echo "$blob_urls" | grep put_url | cut -d '"' -f4)
+get_url=$(echo "$blob_urls" | grep get_url | cut -d '"' -f4)
+
+echo "       creating  application archive ($archive_file)"
+tar -zcf $archive_file --exclude .git $build_dir/*
+
+echo "       uploading application archive"
+curl $put_url -X PUT -H 'Content-Type:' --data-binary @$archive_file
+
+echo "=====> creating  application build   (version $version)"
+build_body='{"source_blob":{"url":"'$get_url'","version":"'$version'"}}'
+build_resp=$(curl_heroku_body "POST" "/apps/$HEROKU_APP/builds" $build_body)
+build_stream_url=$(echo "$build_resp" | grep output_stream_url | cut -d '"' -f4)
+build_id=$(echo "$build_resp" | grep id | cut -d '"' -f4 | sed '2q;d')
+curl $build_stream_url
+
+echo "=====> verifying application build   (id $build_id)"
+build_result=$(curl_heroku "GET" "/apps/$HEROKU_APP/builds/$build_id/result")
+build_exit_code=$(echo "$build_result" | grep -Eo '"exit_code":.*?[^\\],' | awk -F':' '{print $2}' | cut -d ',' -f1)
+echo "       exit code: $build_exit_code"
+
+if [ "0" -ne "$build_exit_code" ]; then
+    exit 1
+fi
+exit 0
