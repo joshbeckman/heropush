@@ -16,7 +16,7 @@ The script requires two `ENV` variables - `HEROKU_APP` and `HEROKU_API_KEY`. You
 
 ## Installation
 ~~~sh
-curl -L https://github.com/andjosh/heropush/blob/master/heropush
+curl -L https://raw.githubusercontent.com/andjosh/heropush/master/heropush -o heropush
 chmod +x heropush
 ~~~
 
@@ -24,7 +24,9 @@ The script has no external dependencies aside from what should already be on you
 
 ## Sample CI/CD script
 ~~~sh
-curl -L https://github.com/andjosh/heropush/blob/master/heropush && chmod +x heropush && ./heropush .
+curl -L https://raw.githubusercontent.com/andjosh/heropush/master/heropush -o heropush \
+    && chmod +x heropush \
+    && ./heropush .
 ~~~
 
 [0]: https://heroku.com
