@@ -1,7 +1,7 @@
 heropush
 ===
 
-This is a simple `bash` script to create a [Heroku][0] application build/deploy from a directory. It uses Heroku's new V3 API, created to replace tools like [`dpl`][2].
+This is a simple `bash` script to create a [Heroku][0] application build/deploy from a directory. It uses Heroku's [new V3 API][3], created to replace tools like [`dpl`][2].
 
 ## Usage
 ~~~sh
@@ -34,3 +34,4 @@ curl -L https://raw.githubusercontent.com/andjosh/heropush/master/heropush -o he
 [0]: https://heroku.com
 [1]: https://dashboard.heroku.com/account
 [2]: https://github.com/travis-ci/dpl
+[3]: https://devcenter.heroku.com/articles/platform-api-reference#overview
