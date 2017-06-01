@@ -5,14 +5,16 @@ This is a simple `bash` script to create a [Heroku][0] application build/deploy 
 
 ## Usage
 ~~~sh
+./heropush <deployable_app_directory>
+# e.g.
 ./heropush ~/some_dir
-# or from within
+# or from within directory
 ./heropush .
 # specifying app on the fly
 HEROKU_APP=foobar ~/heropush ~/some_dir/foobaz
 ~~~
 
-The script requires two `ENV` variables - `HEROKU_APP` and `HEROKU_API_KEY`. You can grab a Heroku API key [on your account page][1].
+The script requires two `ENV` variables - `HEROKU_APP` and `HEROKU_API_KEY` and accepts one argument, (the directory to deploy). You can grab a Heroku API key [on your account page][1].
 
 ## Installation
 ~~~sh
