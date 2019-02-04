@@ -54,7 +54,7 @@ build_result=$(curl_heroku "GET" "/apps/$HEROKU_APP/builds/$build_id")
 build_status=$(echo "$build_result" | grep -Eo '"status":.*?[^\\],' | awk -F':' '{print $2}' | awk -F'"' '{print $2}')
 echo "       build status: $build_status"
 
-if [ "succeeded" -ne "$build_status" ]; then
+if [ "succeeded" != "$build_status" ]; then
     exit 1
 fi
 exit 0
