@@ -50,11 +50,11 @@ build_id=$(echo "$build_resp" | grep id | cut -d '"' -f4 | sed '2q;d')
 curl $build_stream_url
 
 echo "=====> verifying application build   (id $build_id)"
-build_result=$(curl_heroku "GET" "/apps/$HEROKU_APP/builds/$build_id/result")
-build_exit_code=$(echo "$build_result" | grep -Eo '"exit_code":.*?[^\\],' | awk -F':' '{print $2}' | cut -d ',' -f1)
-echo "       exit code: $build_exit_code"
+build_result=$(curl_heroku "GET" "/apps/$HEROKU_APP/builds/$build_id")
+build_status=$(echo "$build_result" | grep -Eo '"status":.*?[^\\],' | awk -F':' '{print $2}' | awk -F'"' '{print $2}')
+echo "       build status: $build_status"
 
-if [ "0" -ne "$build_exit_code" ]; then
+if [ "succeeded" -ne "$build_status" ]; then
     exit 1
 fi
 exit 0
